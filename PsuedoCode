@@ -1,0 +1,27 @@
+Psuedo Code for movement between rooms:
+
+def getPossibleMoves(map):
+    GET location of Player
+    CALCULATE where Player can Move
+        IF On Row Ends or First and Last Rows:
+            3 Possible Moves
+        ELSE:
+            4 Possible Moves
+
+def showWhatIsInPlaces(possibleMoves, map)
+    CHECK QA Object in Possible Moves
+    SHOW QA with Choice of Movement
+    IF Item on Current Spot:
+        Add Option to Get
+        IF Selected:
+            UPDATE Tool Location
+            REPEAT Current Function
+    ELSE:
+        SHOW Only Choices to Move
+    GET User Choice/Input
+    RETURN Input
+
+def update_locations(map, user_input):
+    AMEND map Spot Object with Self (Player) Object with user_input
+    AMEND Current Player map Spot Object to None
+    AMEND Player Object Location Attribute
