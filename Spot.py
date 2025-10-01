@@ -1,3 +1,5 @@
+from Tainer import *
+from QA import *
 class Spot:
     def __init__(self):
         self.person = None
@@ -38,3 +40,9 @@ class Spot:
 
     def get_pos_moves(self):
         return self.person.get_pos_moves()
+
+    def is_player(self):
+        return self.person is Tainer
+
+    def is_qa(self):
+        return self.person is QA

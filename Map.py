@@ -112,8 +112,10 @@ class Map:
         row = 0
         for item in self.map:
             print('****************************************************')
-            print('*                *                *                *\n' * 2, end='')
+            print(f'*       {self.map[row][0].return_person().get_name() if self.map[row][0].is_player() else ' '}        *       {self.map[row][1].return_person().get_name() if self.map[row][1].is_player() else ' '}        *       {self.map[row][2].return_person().get_name() if self.map[row][2].is_player() else ' '}        *')
+            print(f'*                *                *                *')
             print(f'*       {str(row + 1) + 'X'}       *       {str(row + 1) + 'Y'}       *       {str(row + 1) + 'Z'}       *')
-            print('*                *                *                *\n' * 2, end='')
+            print(f'*       {'?' if self.map[row][0].return_has_item() else ' '}        *       {'?' if self.map[row][1].return_has_item() else ' '}        *       {'?' if self.map[row][2].return_has_item() else ' '}        *')
+            print(f'*                *                *                *')
             row += 1
         print('****************************************************')
