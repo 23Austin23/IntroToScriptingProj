@@ -42,7 +42,9 @@ class Spot:
         return self.person.get_pos_moves()
 
     def is_player(self):
-        return self.person is Tainer
+        is_player = isinstance(self.person, Tainer)
+        return is_player
 
     def is_qa(self):
-        return self.person is QA
+        is_qa = isinstance(self.person, QA)
+        return is_qa

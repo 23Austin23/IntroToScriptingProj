@@ -78,6 +78,7 @@ class Map:
         if random_num != 8:
             row = random_num // 3
             col = random_num % 3
+            #print(f'QA added at row {row}, col {chr(col + 88)}')
             self.map[row][col].update_person(QA(name))
 
     def place_new_qa(self, name):
@@ -108,12 +109,20 @@ class Map:
                 real_moves.append(item)
         return real_moves'''
 
+    def meet_villain(self, move):
+        row, col = [int(move[0]), (ord(move[1]) - 88)]
+        person = self.map[row][col].return_person()
+        if person is None:
+            return False
+        else:
+            return True
+
     def print_map(self):
         row = 0
         for item in self.map:
             print('****************************************************')
             print(f'*       {self.map[row][0].return_person().get_name() if self.map[row][0].is_player() else ' '}        *       {self.map[row][1].return_person().get_name() if self.map[row][1].is_player() else ' '}        *       {self.map[row][2].return_person().get_name() if self.map[row][2].is_player() else ' '}        *')
-            print(f'*                *                *                *')
+            print(f'*       {self.map[row][0].return_person().get_name() if self.map[row][0].is_qa() else ' '}        *       {self.map[row][1].return_person().get_name() if self.map[row][1].is_qa() else ' '}        *       {self.map[row][2].return_person().get_name() if self.map[row][2].is_qa() else ' '}        *')
             print(f'*       {str(row + 1) + 'X'}       *       {str(row + 1) + 'Y'}       *       {str(row + 1) + 'Z'}       *')
             print(f'*       {'?' if self.map[row][0].return_has_item() else ' '}        *       {'?' if self.map[row][1].return_has_item() else ' '}        *       {'?' if self.map[row][2].return_has_item() else ' '}        *')
             print(f'*                *                *                *')
