@@ -22,17 +22,22 @@ ENDGAME2 = "Do you mind if I check your Tool Box real quick?"
 def get_move():
     allowed_numbers = ['1', '2', '3', '4', '5']
     allowed_chars = ['X', 'Y', 'Z']
-    while True:
-        move = str(input('Please Enter your move: ')).upper()
-        if move[0] not in allowed_numbers:
-            print('Please enter a valid move')
-        elif move[1] not in allowed_chars:
-            print('Please enter a valid move')
-        else:
-            break
-    new_beginning = move[0]
-    new_beginning = str(int(new_beginning) - 1)
-    return new_beginning + move[1]
+    move = str(input('Please Enter Your Move: ')).upper()
+    if move == 'secure' or move == 'SECURE':
+        return -1
+    else:
+        while True:
+            if move[0] not in allowed_numbers:
+                print('Please enter a valid move')
+                return get_move()
+            elif move[1] not in allowed_chars:
+                print('Please enter a valid move')
+                return get_move()
+            else:
+                break
+        new_beginning = move[0]
+        new_beginning = str(int(new_beginning) - 1)
+        return new_beginning + move[1]
 
 def get_moves(possible_moves):
     allowed_numbers = []
@@ -53,9 +58,11 @@ def get_moves(possible_moves):
     return move
 
 def present_possible_moves(map, prev_location):
-    person = map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person()
+    row, col = int(prev_location[0]), ord(prev_location[1]) - 88
+    person = map[row][col].return_person()
     possible_moves = person.get_pos_moves()
     pos_moves_list = []
+    spot_has_item = map[row][col].return_has_item()
     print('Possible moves:')
     for item in possible_moves:
         new_string = str(int(item[0]) + 1) + str(chr(item[1] + 88)).upper()
@@ -65,6 +72,9 @@ def present_possible_moves(map, prev_location):
     for string in pos_moves_list:
         print(f'{string} ', end = '')
     print('\n')
+    if spot_has_item:
+        pos_moves_list.append(map[row][col].return_item_name())
+        print(f'This spot has a tool: {map[row][col].return_item_name()} \n To secure this tool, input "secure".')
 
 def move_player(move, map, prev_location):
     row, col = [int(move[0]), (ord(move[1]) - 88)]
@@ -85,12 +95,22 @@ def end_game_speech(move, map, prev_location):
     print(f'You have encountered {name}, they approach you!')
     print(ENDGAME1 + ENDGAME2)
     print("...")
-    time.sleep(2)
+    time.sleep(3)
     print("...")
-    time.sleep(2)
+    time.sleep(3)
     row, col = [int(prev_location[0]), (ord(prev_location[1]) - 88)]
-    print(f"Uh oh, looks like you are missing {7 - len(map[row][col].return_person().return_items())} tools. This will have to be written up.")
-    return True
+    items = map[row][col].return_person().return_items()
+    if len(items) < 7:
+        print(f"Uh oh, looks like you are missing {7 - len(items)} tools. This will have to be written up.")
+        print("******************\n*                *\n*  Game Over   *\n*     You Lose    *\n******************", end="\n\n\n")
+    else:
+        print(f"Well, it looks like you have all of your tools accounted for! You passed this inspection.")
+        print("******************\n*                *\n*  Game Over   *\n*     You Won!    *\n******************",end="\n\n\n")
+    time.sleep(2)
+    continue_game = str(input("Do you want to play again? (Y/N): ")).upper()
+    while continue_game != 'Y' or continue_game != 'N':
+        continue_game = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): ")).upper()
+    return continue_game
 
 
 def main():
@@ -111,24 +131,33 @@ def main():
     while True:
         present_possible_moves(map, prev_location)
         move = get_move()
-        #check if move encounters qa
-        encounter = map.meet_villain(move)
-        if encounter:
-            #get QA name, and print end quote
-            continue_game = end_game_speech(move, map, prev_location)
-            if continue_game:
-                main()
+        if move == -1:
+            row, col = int(prev_location[0]), ord(prev_location[1]) - 88
+            item = map[row][col].return_item()
+            if item is None:
+                print('Your input was invalid, please try again.')
             else:
-                break
-        else:
-        #end game if above is true
-        #if another game is desired, re-call main
-        #break cycle
-        #print(f'Your move was: {move}')
-            prev_location = move_player(move, map, prev_location)
-            move_count += 1
-            add_qa(map, move_count, qa_count)
-            map.print_map()
+                map[row][col].return_person().secure_item(item.return_name())
+                map[row][col].remove_item()
+                print(f'You have secured a tool! {item.return_name()} has been secured!')
+                time.sleep(5)
+                map.print_map()
+        #check if move encounters qa
+        if move != -1:
+            encounter = map.meet_villain(move)
+            if encounter:
+                #get QA name, and print end quote
+                continue_game = end_game_speech(move, map, prev_location)
+                if continue_game == 'Y':
+                    main()
+                else:
+                    print('Thank you for playing!')
+                    break
+            else:
+                prev_location = move_player(move, map, prev_location)
+                move_count += 1
+                add_qa(map, move_count, qa_count)
+                map.print_map()
 
 
 

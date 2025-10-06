@@ -35,6 +35,9 @@ class Spot:
     def return_has_item(self):
         return self.item is not None
 
+    def return_item(self):
+        return self.item
+
     def return_item_name(self):
         return self.item.return_name() if self.item is not None else "nothing here!"
 

@@ -14,6 +14,9 @@ class Tainer(Player):
     def return_items(self):
         return self.found_items
 
+    def secure_item(self, item_name):
+        self.found_items.append(item_name)
+
     def set_loc(self, row, col):
         self.location = str(row) + chr(col + 88)
 
