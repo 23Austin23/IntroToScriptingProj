@@ -112,6 +112,35 @@ def end_game_speech(move, map, prev_location):
         continue_game = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): ")).upper()
     return continue_game[0]
 
+def tool_secured(map, move, prev_location):
+    row, col = int(prev_location[0]), ord(prev_location[1]) - 88
+    item = map[row][col].return_item()
+    if item is None:
+        print('Your input was invalid, please try again.')
+    else:
+        map[row][col].return_person().secure_item(item.return_name())
+        map[row][col].remove_item()
+        print(f'You have secured a tool! {item.return_name()} has been secured!')
+        time.sleep(5)
+        map.print_map()
+
+def player_moved(map, move, prev_location, move_count, qa_count):
+    encounter = map.meet_villain(move)
+    if encounter:
+        # get QA name, and print end quote
+        continue_game = end_game_speech(move, map, prev_location)
+        if continue_game == 'Y':
+            main()
+        else:
+            print('Thank you for playing!')
+            return -1
+    else:
+        prev_location = move_player(move, map, prev_location)
+        move_count += 1
+        add_qa(map, move_count, qa_count)
+        map.print_map()
+        return prev_location
+
 
 def main():
     move_count = 0
@@ -132,32 +161,12 @@ def main():
         present_possible_moves(map, prev_location)
         move = get_move()
         if move == -1:
-            row, col = int(prev_location[0]), ord(prev_location[1]) - 88
-            item = map[row][col].return_item()
-            if item is None:
-                print('Your input was invalid, please try again.')
-            else:
-                map[row][col].return_person().secure_item(item.return_name())
-                map[row][col].remove_item()
-                print(f'You have secured a tool! {item.return_name()} has been secured!')
-                time.sleep(5)
-                map.print_map()
-        #check if move encounters qa
+            tool_secured(map, move, prev_location)
         if move != -1:
-            encounter = map.meet_villain(move)
-            if encounter:
-                #get QA name, and print end quote
-                continue_game = end_game_speech(move, map, prev_location)
-                if continue_game == 'Y':
-                    main()
-                else:
-                    print('Thank you for playing!')
-                    break
-            else:
-                prev_location = move_player(move, map, prev_location)
-                move_count += 1
-                add_qa(map, move_count, qa_count)
-                map.print_map()
+            prev_location = player_moved(map, move, prev_location, move_count, qa_count)
+            if prev_location == -1:
+                break
+            map.qa_movement()
 
 
 

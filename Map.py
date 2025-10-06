@@ -8,11 +8,6 @@ class Map:
     def __init__(self):
         self.map = self.generate_map()
 
-    def __str__(self):
-        for item in self.map:
-            for i in item:
-                print(i)
-
     def __getitem__(self, item):
         return self.map[item]
 
@@ -73,20 +68,78 @@ class Map:
         random_num = random.randint(0, len(names) - 1)
         return names[random_num]
 
-    def place_qa(self, name):
-        random_num = random.randint(0, 14)
-        if random_num != 8:
-            row = random_num // 3
-            col = random_num % 3
-            #print(f'QA added at row {row}, col {chr(col + 88)}')
-            self.map[row][col].update_person(QA(name))
+    def player_locations_spots(self):
+        return_this = []
+        return_this2 = []
+        for item in self.map:
+            for item2 in item:
+                person = item2.return_person()
+                if isinstance(person, QA) or isinstance(person, Tainer):
+                    return_this.append(person.get_loc())
+                else:
+                    continue
+        for location in return_this:
+            row, col = int(location[0]), int(ord(location[1])) - 88
+            spot = ((row - 1) * 3) + col
+            return_this2.append(spot)
+        return return_this2
 
-    def place_new_qa(self, name):
+    def player_locations_chr(self):
+        return_this = []
+        for item in self.map:
+            for item2 in item:
+                if item2.return_person() != None:
+                    return_this.append(item2.return_person().get_loc())
+        return return_this
+
+    def place_qa(self, name):
+        do_not_place = self.player_locations_spots()
         while True:
             random_num = random.randint(0, 14)
-            if self.map[random_num // 3][random_num % 3].return_person() is None:
-                self.map[random_num // 3][random_num % 3].update_person(QA(name))
+            if random_num not in do_not_place:
+                row = random_num // 3
+                col = random_num % 3
+                #print(f'QA added at row {row}, col {chr(col + 88)}')
+                self.map[row][col].update_person(QA(name))
+                self.map[row][col].return_person().set_loc(row, col)
                 break
+
+    def place_new_qa(self, name):
+        do_not_place = self.player_locations_spots()
+        while True:
+            random_num = random.randint(0, 14)
+            if random_num not in do_not_place:
+                row = random_num // 3
+                col = random_num % 3
+                # print(f'QA added at row {row}, col {chr(col + 88)}')
+                self.map[row][col].update_person(QA(name))
+                self.map[row][col].return_person().set_loc(row, col)
+                break
+
+    def qa_movement(self):
+        list_of_qa = []
+        do_not_place = self.player_locations_chr()
+        for row in range(0, 4):
+            for col in range(0, 2):
+                if self.map[row][col].return_person() != None:
+                    if isinstance(self.map[row][col].return_person(), QA):
+                        list_of_qa.append(self.map[row][col].return_person())
+        for qa in list_of_qa:
+            moves = qa.get_pos_moves()
+            for move in moves:
+                if move in do_not_place:
+                    moves.remove(move)
+            random_num = random.randint(0, 10)
+            if random_num > 4:
+                random_num = random.randint(0, len(moves) - 1)
+                row = moves[random_num][0]
+                col = moves[random_num][1]
+                prev_location = qa.get_loc()
+                self.map[prev_location[0]][ord(prev_location[1]) - 88].remove_person()
+                self.map[row][col].update_person(qa)
+                qa.set_loc(row, col)
+
+
 
     def map_start(self):
         self.place_spots()

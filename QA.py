@@ -6,9 +6,6 @@ class QA(Player):
         super().__init__(name)
         self.location = None
 
-    def __str__(self):
-        print(f'QA Name: {self.name} Location: {self.location if self.location is not None else "None"}')
-
     def get_name(self):
         return self.name
 
@@ -34,7 +31,7 @@ class QA(Player):
     def get_pos_moves(self):
         player_location = self.get_loc()
         row = int(player_location[0]) - 1
-        col = ord(player_location) - 88
+        col = ord(player_location[1]) - 88
         if (row == 2 or row == 3 or row == 4) and col == 1:
             pos_moves = ((row, col + 1), (row, col - 1), (row - 1, col), (row + 1, col))
         else:
