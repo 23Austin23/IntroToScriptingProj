@@ -93,7 +93,7 @@ def end_game_speech(move, map, prev_location):
     qa_person = map[row][col].return_person()
     name = qa_person.get_name()
     print(f'You have encountered {name}, they approach you!')
-    print(ENDGAME1 + ENDGAME2)
+    print(ENDGAME1 + ' ' + ENDGAME2)
     print("...")
     time.sleep(3)
     print("...")
@@ -102,15 +102,15 @@ def end_game_speech(move, map, prev_location):
     items = map[row][col].return_person().return_items()
     if len(items) < 7:
         print(f"Uh oh, looks like you are missing {7 - len(items)} tools. This will have to be written up.")
-        print("******************\n*                *\n*  Game Over   *\n*     You Lose    *\n******************", end="\n\n\n")
+        print("******************\n*                *\n*   Game Over   *\n*    You Lose    *\n******************", end="\n\n\n")
     else:
         print(f"Well, it looks like you have all of your tools accounted for! You passed this inspection.")
-        print("******************\n*                *\n*  Game Over   *\n*     You Won!    *\n******************",end="\n\n\n")
+        print("******************\n*                *\n*   Game Over   *\n*    You Won!    *\n******************",end="\n\n\n")
     time.sleep(2)
     continue_game = str(input("Do you want to play again? (Y/N): ")).upper()
-    while continue_game != 'Y' or continue_game != 'N':
+    while continue_game[0] != 'Y' or continue_game[0] != 'N':
         continue_game = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): ")).upper()
-    return continue_game
+    return continue_game[0]
 
 
 def main():
