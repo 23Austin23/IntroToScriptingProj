@@ -3,6 +3,7 @@ from Tainer import *
 from QA import *
 from Item import *
 import random
+import math
 
 class Map:
     def __init__(self):
@@ -60,7 +61,12 @@ class Map:
             item_name_list.remove(item_name_list[0])
 
     def place_player(self):
-        name = str(input('Please enter your name: '))
+        name = str(input('Please enter your name (10 Character Limit): '))
+        name = name.replace(' ', '')
+        while len(name) > 10:
+            print('I am sorry, you have entered a name that is too long! Please try again.')
+            name = str(input('Please enter your name (10 Character Limit): '))
+            name = name.replace(' ', '')
         self.map[2][1].update_person(Tainer(name))
 
     def generate_name(self):
@@ -74,7 +80,7 @@ class Map:
         for item in self.map:
             for item2 in item:
                 person = item2.return_person()
-                if isinstance(person, QA) or isinstance(person, Tainer):
+                if item2.is_player() or item2.is_qa():
                     return_this.append(person.get_loc())
                 else:
                     continue
@@ -88,15 +94,15 @@ class Map:
         return_this = []
         for item in self.map:
             for item2 in item:
-                if item2.return_person() != None:
+                if item2.is_player() or item2.is_qa():
                     return_this.append(item2.return_person().get_loc())
         return return_this
 
     def place_qa(self, name):
-        do_not_place = self.player_locations_spots()
+        #do_not_place = self.player_locations_spots()
         while True:
             random_num = random.randint(0, 14)
-            if random_num not in do_not_place:
+            if random_num != 7:
                 row = random_num // 3
                 col = random_num % 3
                 #print(f'QA added at row {row}, col {chr(col + 88)}')
@@ -117,25 +123,33 @@ class Map:
                 break
 
     def qa_movement(self):
+        print('starting qa movement')
         list_of_qa = []
         do_not_place = self.player_locations_chr()
         for row in range(0, 4):
             for col in range(0, 2):
-                if self.map[row][col].return_person() != None:
-                    if isinstance(self.map[row][col].return_person(), QA):
-                        list_of_qa.append(self.map[row][col].return_person())
+                if self.map[row][col].is_qa():
+                    list_of_qa.append(self.map[row][col].return_person())
+                    print('added qa to list of qa')
         for qa in list_of_qa:
             moves = qa.get_pos_moves()
+            print('got moves for qa')
             for move in moves:
                 if move in do_not_place:
                     moves.remove(move)
+                    print(f'removed move {move}')
             random_num = random.randint(0, 10)
+            print(f'random number {random_num}')
             if random_num > 4:
+                print("we're moving!")
                 random_num = random.randint(0, len(moves) - 1)
                 row = moves[random_num][0]
                 col = moves[random_num][1]
                 prev_location = qa.get_loc()
-                self.map[prev_location[0]][ord(prev_location[1]) - 88].remove_person()
+                print(f'prev_location: {prev_location}')
+                print(f'removing qa from prev_location: {prev_location[0]} {ord(prev_location[1]) - 88}')
+                self.map[int(prev_location[0])][ord(prev_location[1]) - 88].remove_person()
+                print(f'moved to {row}, {col}')
                 self.map[row][col].update_person(qa)
                 qa.set_loc(row, col)
 
@@ -164,20 +178,49 @@ class Map:
 
     def meet_villain(self, move):
         row, col = [int(move[0]), (ord(move[1]) - 88)]
-        person = self.map[row][col].return_person()
-        if person is None:
-            return False
-        else:
-            return True
+        person = self.map[row][col].is_qa()
+        return person
 
     def print_map(self):
         row = 0
+        width = 16
         for item in self.map:
             print('****************************************************')
-            print(f'*       {self.map[row][0].return_person().get_name() if self.map[row][0].is_player() else ' '}        *       {self.map[row][1].return_person().get_name() if self.map[row][1].is_player() else ' '}        *       {self.map[row][2].return_person().get_name() if self.map[row][2].is_player() else ' '}        *')
-            print(f'*       {self.map[row][0].return_person().get_name() if self.map[row][0].is_qa() else ' '}        *       {self.map[row][1].return_person().get_name() if self.map[row][1].is_qa() else ' '}        *       {self.map[row][2].return_person().get_name() if self.map[row][2].is_qa() else ' '}        *')
+            print('*', end='')
+            for i in range(0, 3):
+                name = self.map[row][i].return_person().get_name() if self.map[row][i].is_player() else ' '
+                #print(f'name: {name}')
+                #print('*', end='')
+                for space in range(0, math.floor((width - len(name)) / 2)):
+                    print(' ', end='')
+                print(f'{name}', end='')
+                for space in range(0, math.ceil((width - len(name)) / 2)):
+                    print(' ', end='')
+                print('*', end = '')
+            print('')
+            print('*', end='')
+            for i in range(0, 3):
+                name = self.map[row][i].return_person().get_name() if self.map[row][i].is_qa() else ' '
+                #print('*', end='')
+                for space in range(0, math.floor((width - len(name)) / 2)):
+                    print(' ', end='')
+                print(f'{name}', end='')
+                for space in range(0, math.ceil((width - len(name)) / 2)):
+                    print(' ', end='')
+                print('*', end='')
+            print('')
             print(f'*       {str(row + 1) + 'X'}       *       {str(row + 1) + 'Y'}       *       {str(row + 1) + 'Z'}       *')
-            print(f'*       {'?' if self.map[row][0].return_has_item() else ' '}        *       {'?' if self.map[row][1].return_has_item() else ' '}        *       {'?' if self.map[row][2].return_has_item() else ' '}        *')
+            print('*', end='')
+            for i in range(0, 3):
+                name = '?' if self.map[row][0].return_has_item() else ' '
+                #print('*', end='')
+                for space in range(0, 7):
+                    print(' ', end='')
+                print(f'{name}', end='')
+                for space in range(0, 8):
+                    print(' ', end='')
+                print('*', end='')
+            print('')
             print(f'*                *                *                *')
             row += 1
         print('****************************************************')

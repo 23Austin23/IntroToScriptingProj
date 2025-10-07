@@ -21,7 +21,11 @@ class Spot:
         self.person = person
 
     def remove_person(self):
+        print('removing person')
+        # print(f'person: {self.person if isinstance(self.person, QA) or isinstance(self.person, Tainer) else "None"}')
         self.person = None
+        if self.person is None:
+            print('Person is None')
 
     def update_item(self, item):
         self.item = item

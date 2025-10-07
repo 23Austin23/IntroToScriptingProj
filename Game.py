@@ -1,22 +1,25 @@
 from Map import *
 import time
 INTRO = """Welcome to The Flightline! This is a Text Based Game that will test your ability to evade
-           and collect your lost tools before encountering your roaming QA representative. You must 
-           collect 7 different tools before encountering QA or else you will receive paperwork the 
-           game will reset from the beginning.\n\n"""
+and collect your lost tools before encountering your roaming QA representative. You must 
+collect 7 different tools before encountering QA or else you will receive paperwork the 
+game will reset from the beginning.\n\n"""
 
 INSTRUCTIONS = """You will have two choices for actions:
-                  1) Move your character from location to location.
-                  2) Collect a tool that is at the location you are on.
-                  You will be informed of the location of QA if they are neighboring your location.
-                  The Game will begin with 1 QA member sharing the map with you, but as you move around
-                  additional QA members will appear around the map. Be careful! You can be surrounded and 
-                  forced to lose the game if you do not plan accordingly!
-                  
-                  Good Luck!"""
+1) Move your character from location to location.
+2) Collect a tool that is at the location you are on.
+You will be informed of the location of QA if they are neighboring your location.
+The Game will begin with 1 QA member sharing the map with you, but as you move around
+additional QA members will appear around the map. Be careful! You can be surrounded and 
+forced to lose the game if you do not plan accordingly!
+
+Good Luck!"""
 
 ENDGAME1 = "Hello!"
 ENDGAME2 = "Do you mind if I check your Tool Box real quick?"
+MAP_TEXT = """Above is your game map! You can see that your player name is on the starting position.
+It will move as you move your player. You will also see a number of names other than yours.
+These are QA Members. DO NOT encounter them without intending to do so!"""
 #ENDGAME3 = f"Uh oh, looks like you are missing {7 - num_items} tools. This will have to be written up."
 
 def get_move():
@@ -126,6 +129,7 @@ def tool_secured(map, move, prev_location):
 
 def player_moved(map, move, prev_location, move_count, qa_count):
     encounter = map.meet_villain(move)
+    print(f'You have encountered qa: {encounter}.')
     if encounter:
         # get QA name, and print end quote
         continue_game = end_game_speech(move, map, prev_location)
@@ -136,6 +140,7 @@ def player_moved(map, move, prev_location, move_count, qa_count):
             return -1
     else:
         prev_location = move_player(move, map, prev_location)
+        map.qa_movement()
         move_count += 1
         add_qa(map, move_count, qa_count)
         map.print_map()
@@ -151,22 +156,22 @@ def main():
     print(INTRO + '\n\n' + INSTRUCTIONS)
     #time.sleep(10)
     map.print_map()
-    print("""Above is your game map! You can see that your player name is on the starting position.
-             It will move as you move your player. You will also see a number of names other than yours.
-             These are QA Members. DO NOT encounter them without indending to do so!""")
+    print(MAP_TEXT)
     time.sleep(7)
     #print('Possible Actions:')
     prev_location = "2Y"
     while True:
         present_possible_moves(map, prev_location)
         move = get_move()
+        print(f'move: {move}')
         if move == -1:
             tool_secured(map, move, prev_location)
         if move != -1:
+            print(f'moving player: {move}')
             prev_location = player_moved(map, move, prev_location, move_count, qa_count)
             if prev_location == -1:
                 break
-            map.qa_movement()
+            #map.qa_movement()
 
 
 
