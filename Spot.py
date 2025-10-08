@@ -26,6 +26,7 @@ class Spot:
         self.person = None
         if self.person is None:
             print('Person is None')
+        return self
 
     def update_item(self, item):
         self.item = item

@@ -86,17 +86,20 @@ class Map:
                     continue
         for location in return_this:
             row, col = int(location[0]), int(ord(location[1])) - 88
-            spot = ((row - 1) * 3) + col
-            return_this2.append(spot)
+            return_this2.append((row, col))
         return return_this2
 
     def player_locations_chr(self):
         return_this = []
+        return_this2 = []
         for item in self.map:
             for item2 in item:
                 if item2.is_player() or item2.is_qa():
                     return_this.append(item2.return_person().get_loc())
-        return return_this
+        for location in return_this:
+            row, col = int(location[0]), int(ord(location[1])) - 88
+            return_this2.append((row, col))
+        return return_this2
 
     def place_qa(self, name):
         #do_not_place = self.player_locations_spots()
@@ -112,6 +115,13 @@ class Map:
 
     def place_new_qa(self, name):
         do_not_place = self.player_locations_spots()
+        new_list = []
+        for item in do_not_place:
+            row = item[0]
+            col = item[1]
+            new_list.append((row * 3) + col)
+        do_not_place = new_list
+        print(f'do_not_place in place new qa: {do_not_place}')
         while True:
             random_num = random.randint(0, 14)
             if random_num not in do_not_place:
@@ -122,36 +132,53 @@ class Map:
                 self.map[row][col].return_person().set_loc(row, col)
                 break
 
+    def get_qa_positions(self):
+        list_of_qa_positions = []
+        for line in self.map:
+            for spot in line:
+                if spot.is_qa():
+                    loc = spot.return_person().get_loc()
+                    row, col = int(loc[0]), int(ord(loc[1])) - 88
+                    list_of_qa_positions.append((row, col))
+                    print(f'added qa position {row} {col} to list of qa')
+        return list_of_qa_positions
+
+    def move_qa(self, list_qa, moves, i):
+        print("we're moving!")
+        print(f'list_of_qa_positions: {list_qa}')
+        random_num = random.randint(0, len(moves) - 1)
+        row = moves[random_num][0]
+        col = moves[random_num][1]
+        prev_location = self.map[list_qa[i][0]][list_qa[i][1]].return_person().get_loc()
+        print(f'prev_location: {prev_location}')
+        print(f'removing qa from prev_location: {prev_location[0]} {ord(prev_location[1]) - 88}')
+        self.map[row][col].update_person(self.map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person())
+        self.map[int(prev_location[0])][ord(prev_location[1]) - 88].remove_person()
+        print(f'moved to {row}, {col}')
+        self.map[row][col].return_person().set_loc(row, col)
+        list_qa = self.get_qa_positions()
+        return list_qa
+
     def qa_movement(self):
         print('starting qa movement')
-        list_of_qa = []
+        list_of_qa_positions = self.get_qa_positions()
         do_not_place = self.player_locations_chr()
-        for row in range(0, 4):
-            for col in range(0, 2):
-                if self.map[row][col].is_qa():
-                    list_of_qa.append(self.map[row][col].return_person())
-                    print('added qa to list of qa')
-        for qa in list_of_qa:
-            moves = qa.get_pos_moves()
-            print('got moves for qa')
+        #print(f'list_of_qa_positions: {list_of_qa_positions} do_not_place: {do_not_place}')
+        print(f'list_of_qa_positions: {list_of_qa_positions} do_not_place: {do_not_place}')
+        #get qa moves, remove from do not place
+        for i in range(0, len(list_of_qa_positions) - 1):
+            moves = self.map[list_of_qa_positions[i][0]][list_of_qa_positions[i][1]].get_pos_moves()
+            print(moves)
             for move in moves:
+                print(f'move in do_not_place: {move} {do_not_place} {move in do_not_place}')
                 if move in do_not_place:
                     moves.remove(move)
-                    print(f'removed move {move}')
+                    continue
+            print(f'new moves: {moves}')
             random_num = random.randint(0, 10)
             print(f'random number {random_num}')
-            if random_num > 4:
-                print("we're moving!")
-                random_num = random.randint(0, len(moves) - 1)
-                row = moves[random_num][0]
-                col = moves[random_num][1]
-                prev_location = qa.get_loc()
-                print(f'prev_location: {prev_location}')
-                print(f'removing qa from prev_location: {prev_location[0]} {ord(prev_location[1]) - 88}')
-                self.map[int(prev_location[0])][ord(prev_location[1]) - 88].remove_person()
-                print(f'moved to {row}, {col}')
-                self.map[row][col].update_person(qa)
-                qa.set_loc(row, col)
+            if random_num > 2:
+                list_of_qa_positions = self.move_qa(list_of_qa_positions, moves, i)
 
 
 
@@ -181,46 +208,37 @@ class Map:
         person = self.map[row][col].is_qa()
         return person
 
-    def print_map(self):
+    def print_spaces(self, name, width):
+        print(' ' * math.floor((width - len(name)) / 2), end='')
+        print(f'{name}', end='')
+        print(' ' * math.ceil((width - len(name)) / 2), end='')
+        print('*', end='')
+
+    def print_map(self, move_count):
         row = 0
         width = 16
-        for item in self.map:
+        print(f'Move Counter: {move_count}')
+        while row <= 4:
             print('****************************************************')
             print('*', end='')
             for i in range(0, 3):
                 name = self.map[row][i].return_person().get_name() if self.map[row][i].is_player() else ' '
-                #print(f'name: {name}')
-                #print('*', end='')
-                for space in range(0, math.floor((width - len(name)) / 2)):
-                    print(' ', end='')
-                print(f'{name}', end='')
-                for space in range(0, math.ceil((width - len(name)) / 2)):
-                    print(' ', end='')
-                print('*', end = '')
+                self.print_spaces(name, width)
             print('')
             print('*', end='')
-            for i in range(0, 3):
-                name = self.map[row][i].return_person().get_name() if self.map[row][i].is_qa() else ' '
+            for i2 in range(0, 3):
+                name = self.map[row][i2].return_person().get_name() if self.map[row][i2].is_qa() else ' '
                 #print('*', end='')
-                for space in range(0, math.floor((width - len(name)) / 2)):
-                    print(' ', end='')
-                print(f'{name}', end='')
-                for space in range(0, math.ceil((width - len(name)) / 2)):
-                    print(' ', end='')
-                print('*', end='')
+                self.print_spaces(name, width)
             print('')
-            print(f'*       {str(row + 1) + 'X'}       *       {str(row + 1) + 'Y'}       *       {str(row + 1) + 'Z'}       *')
+            print(f'*       {str(row + 1) + "X"}       *       {str(row + 1) + "Y"}       *       {str(row + 1) + "Z"}       *')
             print('*', end='')
-            for i in range(0, 3):
-                name = '?' if self.map[row][0].return_has_item() else ' '
-                #print('*', end='')
-                for space in range(0, 7):
-                    print(' ', end='')
+            for i3 in range(0, 3):
+                name = '?' if self.map[row][i3].return_has_item() else ' '
+                print(' ' * 7, end='')
                 print(f'{name}', end='')
-                for space in range(0, 8):
-                    print(' ', end='')
+                print(' ' * 8, end='')
                 print('*', end='')
             print('')
-            print(f'*                *                *                *')
             row += 1
         print('****************************************************')
