@@ -232,14 +232,25 @@ class Map:
         while row <= 4:
             print('****************************************************')
             #print(f'row has person: {self.row_has_person(row)}')
-            if self.row_has_player(row):
+            if self.row_has_player(row) and self.row_has_qa(row):
                 print('*', end='')
                 for i in range(0, 3):
                     name = self.map[row][i].return_person().get_name() if self.map[row][i].is_player() else ' '
                     self.print_spaces(name, width)
+                print('')
+                print('*', end='')
+                for i2 in range(0, 3):
+                    name = self.map[row][i2].return_person().get_name() if self.map[row][i2].is_qa() else ' '
+                    # print('*', end='')
+                    self.print_spaces(name, width)
             elif not self.row_has_qa(row) and not self.row_has_player(row):
                 print(('*' + ' ' * 16) * 3, end='*' )
-            if self.row_has_qa(row):
+            elif self.row_has_player(row) and not self.row_has_qa(row):
+                print('*', end='')
+                for i in range(0, 3):
+                    name = self.map[row][i].return_person().get_name() if self.map[row][i].is_player() else ' '
+                    self.print_spaces(name, width)
+            elif self.row_has_qa(row) and not self.row_has_player(row):
                 if not self.row_has_player(row):
                     print('*', end='')
                 for i2 in range(0, 3):

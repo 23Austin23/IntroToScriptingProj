@@ -5,6 +5,7 @@ and collect your lost tools before encountering your roaming QA representative. 
 collect 7 different tools before encountering QA or else you will receive paperwork the 
 game will reset from the beginning.\n\n"""
 
+
 INSTRUCTIONS = """You will have two choices for actions:
 1) Move your character from location to location.
 2) Collect a tool that is at the location you are on.
@@ -82,6 +83,14 @@ def add_qa(map, move_count, qa_count):
         qa_count += 1
         print(f'QA Member added! QA count: {qa_count}')
 
+def continue_is_valid(input):
+    input = input.replace(' ', '').upper()
+    if input == 'Y' or input == 'N':
+        return input
+    else:
+        input = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): "))
+        return continue_is_valid(input)
+
 def end_game_speech(move, map, prev_location):
     row, col = [int(move[0]), (ord(move[1]) - 88)]
     qa_person = map[row][col].return_person()
@@ -102,11 +111,8 @@ def end_game_speech(move, map, prev_location):
         print("******************\n*    Game Over   *\n*    You Won!    *\n******************",end="\n\n\n")
     time.sleep(2)
     continue_game = str(input("Do you want to play again? (Y/N): ")).upper()
-    while continue_game[0] != 'Y' or continue_game[0] != 'N':
-        continue_game = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): ")).upper()
-        if continue_game.upper() == 'Y' or continue_game.upper() == 'N':
-            break
-    return continue_game[0]
+    continue_game = continue_is_valid(continue_game)
+    return continue_game
 
 def tool_secured(map, move_count, prev_location, qa_count):
     row, col = int(prev_location[0]), ord(prev_location[1]) - 88
@@ -166,10 +172,6 @@ def main():
             move_count += 1
             if prev_location == -1:
                 break
-
-
-
-
 
 if __name__ == '__main__':
     main()
