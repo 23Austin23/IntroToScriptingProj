@@ -23,7 +23,7 @@ class QA(Player):
 
     def set_loc(self, row, col):
         self.location = str(row + 1) + chr(col + 88)
-        print(f'loc set: {self.location}')
+        #print(f'loc set: {self.location}')
 
     def move_dont_move(self):
         number = random.randint(1, 6)

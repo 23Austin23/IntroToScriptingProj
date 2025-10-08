@@ -80,7 +80,7 @@ def add_qa(map, move_count, qa_count):
     elif move_count % 4 == 0 and qa_count < 3:
         map.place_new_qa(map.generate_name())
         qa_count += 1
-        print(f'QA added! QA count: {qa_count}')
+        print(f'QA Member added! QA count: {qa_count}')
 
 def end_game_speech(move, map, prev_location):
     row, col = [int(move[0]), (ord(move[1]) - 88)]
@@ -124,7 +124,7 @@ def tool_secured(map, move_count, prev_location, qa_count):
 
 def player_moved(map, move, prev_location, move_count, qa_count):
     encounter = map.meet_villain(move)
-    print(f'You have encountered qa: {encounter}.')
+    #print(f'You have encountered qa: {encounter}.')
     if encounter:
         # get QA name, and print end quote
         continue_game = end_game_speech(move, map, prev_location)
@@ -138,6 +138,7 @@ def player_moved(map, move, prev_location, move_count, qa_count):
         map.qa_movement()
         add_qa(map, move_count, qa_count)
         map.print_map(move_count + 1)
+        time.sleep(3)
         return prev_location
 
 
@@ -150,20 +151,17 @@ def main():
     print(INTRO + '\n\n' + INSTRUCTIONS)
     #time.sleep(10)
     map.print_map(move_count)
-    print(MAP_TEXT)
+    print(MAP_TEXT + '\n')
     time.sleep(7)
     #print('Possible Actions:')
     prev_location = "2Y"
     while True:
         present_possible_moves(map, prev_location)
         move = get_move(map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person().get_pos_moves())
-        print(f'move_count is {move_count}')
-        print(f'move: {move}')
         if move == -1:
             tool_secured(map, move_count, prev_location, qa_count)
             move_count += 1
         if move != -1:
-            print(f'moving player: {move}')
             prev_location = player_moved(map, move, prev_location, move_count, qa_count)
             move_count += 1
             if prev_location == -1:

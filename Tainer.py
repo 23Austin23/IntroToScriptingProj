@@ -5,9 +5,6 @@ class Tainer(Player):
         self.found_items = []
         self.location = '2Y'
 
-    def __str__(self):
-        print(f'Tainer: {self.name} Location: {self.location} Tools Found: {self.found_items}')
-
     def get_name(self):
         return super().get_name()
 
