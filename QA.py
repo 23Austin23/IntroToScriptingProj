@@ -55,13 +55,3 @@ class QA(Player):
             else:
                 pos_moves = [(row, col - 1), (row + 1, col), (row - 1, col)]
         return pos_moves
-
-    def move(self):#need to remove QA from map and update map with new location
-        moves = self.move_dont_move()
-        pos_moves = self.get_possible_moves()
-        if moves:
-
-            number = random.randint(1, len(pos_moves))
-            self.set_location((pos_moves[number][0], pos_moves[number][1]))
-        else:
-            pass

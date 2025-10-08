@@ -20,9 +20,6 @@ class Map:
             self.map.append(item)
         return self.map
 
-    def return_map(self):
-        return self.map
-
     def random_item_list(self):
         return_list = []
         while len(return_list) < 7:

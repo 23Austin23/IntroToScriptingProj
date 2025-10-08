@@ -5,18 +5,6 @@ class Spot:
         self.person = None
         self.item = None
 
-    def __str__(self):
-        print(self.person if self.person is not None else "None")
-        print(self.item if self.item is not None else "None")
-
-    def return_num_stuff(self):
-        count = 0
-        if self.person is not None:
-            count += 1
-        if self.item is not None:
-            count += 1
-        return count
-
     def update_person(self, person):
         self.person = person
 
@@ -54,7 +42,3 @@ class Spot:
     def is_qa(self):
         is_qa = isinstance(self.person, QA)
         return is_qa
-
-    def is_person(self):
-        is_person = (self.is_qa or self.is_player())
-        return is_person
