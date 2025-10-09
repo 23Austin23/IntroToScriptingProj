@@ -165,7 +165,7 @@ class Map:
         #get qa moves, remove from do not place
         for i in range(0, len(list_of_qa_positions) - 1):
             moves = self.map[list_of_qa_positions[i][0]][list_of_qa_positions[i][1]].get_pos_moves()
-            print(moves)
+            #print(moves)
             for move in moves:
                 #print(f'move in do_not_place: {move} {do_not_place} {move in do_not_place}')
                 if move in do_not_place:
