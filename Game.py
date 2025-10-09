@@ -75,12 +75,13 @@ def move_player(move, map, prev_location):
     prev_location = str(row) + chr(col + 88)
     return prev_location
 
-def add_qa(map, move_count, qa_count):
+def add_qa(map, move_count):
+    qa_count = map.get_num_qa()
     if move_count == 0:
         pass
     elif move_count % 4 == 0 and qa_count < 3:
         map.place_new_qa(map.generate_name())
-        qa_count += 1
+        qa_count = map.get_num_qa()
         print(f'QA Member added! QA count: {qa_count}')
 
 def continue_is_valid(input):
@@ -114,7 +115,7 @@ def end_game_speech(move, map, prev_location):
     continue_game = continue_is_valid(continue_game)
     return continue_game
 
-def tool_secured(map, move_count, prev_location, qa_count):
+def tool_secured(map, move_count, prev_location):
     row, col = int(prev_location[0]), ord(prev_location[1]) - 88
     item = map[row][col].return_item()
     if item is None:
@@ -125,10 +126,10 @@ def tool_secured(map, move_count, prev_location, qa_count):
         print(f'You have secured a tool! {item.return_name()} has been secured!')
         time.sleep(5)
         map.qa_movement()
-        add_qa(map, move_count, qa_count)
+        add_qa(map, move_count)
         map.print_map(move_count + 1)
 
-def player_moved(map, move, prev_location, move_count, qa_count):
+def player_moved(map, move, prev_location, move_count):
     encounter = map.meet_villain(move)
     #print(f'You have encountered qa: {encounter}.')
     if encounter:
@@ -142,7 +143,7 @@ def player_moved(map, move, prev_location, move_count, qa_count):
     else:
         prev_location = move_player(move, map, prev_location)
         map.qa_movement()
-        add_qa(map, move_count, qa_count)
+        add_qa(map, move_count)
         map.print_map(move_count + 1)
         time.sleep(3)
         return prev_location
@@ -150,7 +151,6 @@ def player_moved(map, move, prev_location, move_count, qa_count):
 
 def main():
     move_count = 0
-    qa_count = 1
     prev_location = ['', '']
     map = Map()
     map.map_start()#Map has been generated
@@ -165,10 +165,10 @@ def main():
         present_possible_moves(map, prev_location)
         move = get_move(map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person().get_pos_moves())
         if move == -1:
-            tool_secured(map, move_count, prev_location, qa_count)
+            tool_secured(map, move_count, prev_location)
             move_count += 1
         if move != -1:
-            prev_location = player_moved(map, move, prev_location, move_count, qa_count)
+            prev_location = player_moved(map, move, prev_location, move_count)
             move_count += 1
             if prev_location == -1:
                 break

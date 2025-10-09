@@ -143,18 +143,21 @@ class Map:
     def move_qa(self, list_qa, moves, i):
         #print("we're moving!")
        # print(f'list_of_qa_positions: {list_qa}')
-        random_num = random.randint(0, len(moves) - 1)
-        row = moves[random_num][0]
-        col = moves[random_num][1]
-        prev_location = self.map[list_qa[i][0]][list_qa[i][1]].return_person().get_loc()
-        #print(f'prev_location: {prev_location}')
-        #print(f'removing qa from prev_location: {prev_location[0]} {ord(prev_location[1]) - 88}')
-        self.map[row][col].update_person(self.map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person())
-        self.map[int(prev_location[0])][ord(prev_location[1]) - 88].remove_person()
-        #print(f'moved to {row}, {col}')
-        self.map[row][col].return_person().set_loc(row, col)
-        list_qa = self.get_qa_positions()
-        return list_qa
+        if len(moves) == 0:
+            return list_qa
+        else:
+            random_num = random.randint(0, len(moves) - 1)
+            row = moves[random_num][0]
+            col = moves[random_num][1]
+            prev_location = self.map[list_qa[i][0]][list_qa[i][1]].return_person().get_loc()
+            #print(f'prev_location: {prev_location}')
+            #print(f'removing qa from prev_location: {prev_location[0]} {ord(prev_location[1]) - 88}')
+            self.map[row][col].update_person(self.map[int(prev_location[0])][ord(prev_location[1]) - 88].return_person())
+            self.map[int(prev_location[0])][ord(prev_location[1]) - 88].remove_person()
+            #print(f'moved to {row}, {col}')
+            self.map[row][col].return_person().set_loc(row, col)
+            list_qa = self.get_qa_positions()
+            return list_qa
 
     def qa_movement(self):
         #print('starting qa movement')
@@ -228,7 +231,8 @@ class Map:
         width = 16
         move = f'Move Counter: {move_count}'
         tool = f'Tools Found: {7 - self.tools_remaining()}'
-        print(f'Move Counter: {move_count}' + (' ' * (52 - (len(move) + len(tool)))) + f'Tools Found: {7 - self.tools_remaining()}')
+        qa = f'QA Members: {self.get_num_qa()}'
+        print(move + (' ' * math.floor((52 - (len(move) + len(tool) + len(qa))) / 2)) + qa + (' ' * math.ceil((52 - (len(move) + len(tool) + len(qa))) / 2))+ tool)
         while row <= 4:
             print('****************************************************')
             #print(f'row has person: {self.row_has_person(row)}')
@@ -270,3 +274,12 @@ class Map:
             print('')
             row += 1
         print('****************************************************')
+
+    def get_num_qa(self):
+        num_qa = 0
+        for row in self.map:
+            for spot in row:
+                if spot.is_qa():
+                    num_qa += 1
+        return num_qa
+
