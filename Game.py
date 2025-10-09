@@ -58,7 +58,7 @@ def present_possible_moves(map, prev_location):
     spot_has_item = map[row][col].return_has_item()
     print('Possible moves:')
     for item in possible_moves:
-        new_string = str(int(item[0]) + 1) + str(chr(item[1] + 88)).upper()
+        new_string = item[2] + ': ' + str(int(item[0]) + 1) + str(chr(item[1] + 88)).upper()
         pos_moves_list.append(new_string)
     #pos_moves_list = map.check_qa(pos_moves_list)
     pos_moves_list.sort()
@@ -92,20 +92,31 @@ def continue_is_valid(input):
         input = str(input("Invalid Input, Please Enter 'Y' or 'N'. \n Do you want to play again? (Y/N): "))
         return continue_is_valid(input)
 
+def qa_checking_tools(items):
+    if len(items) == 0:
+        time.sleep(1)
+        print('...')
+        time.sleep(2)
+        print('....')
+        time.sleep(3)
+        print('........................*severe crickets................')
+    else:
+        for item in items:
+            print(f"Let's see... you have {item}.")
+            time.sleep(2)
+
+
 def end_game_speech(move, map, prev_location):
     row, col = [int(move[0]), (ord(move[1]) - 88)]
     qa_person = map[row][col].return_person()
     name = qa_person.get_name()
     print(f'You have encountered {name}, they approach you!')
     print(ENDGAME1 + ' ' + ENDGAME2)
-    print("...")
-    time.sleep(3)
-    print("...")
-    time.sleep(3)
     row, col = [int(prev_location[0]), (ord(prev_location[1]) - 88)]
     items = map[row][col].return_person().return_items()
+    qa_checking_tools(items)
     if len(items) < 7:
-        print(f"Uh oh, looks like you are missing {7 - len(items)} tools. This will have to be written up.")
+        print(f"Uh oh, looks like you are missing {7 - len(items)} tools! This will have to be written up.")
         print("******************\n*    Game Over   *\n*    You Lose    *\n******************", end="\n\n\n")
     else:
         print(f"Well, it looks like you have all of your tools accounted for! You passed this inspection.")

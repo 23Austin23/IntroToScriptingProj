@@ -36,10 +36,10 @@ class QA(Player):
         row = int(player_location[0])
         col = ord(player_location[1]) - 88
         if (row == 1 or row == 2 or row == 3) and col == 1:
-            pos_moves = [(row, col + 1), (row, col - 1), (row - 1, col), (row + 1, col)]
+            pos_moves = [(row, col + 1, 'W'), (row, col - 1), (row - 1, col), (row + 1, col)]
         else:
             if row == 0 and col == 1:
-                pos_moves = [(row, col + 1), (row, col - 1), (row + 1, col)]
+                pos_moves = [(row, col + 1, 'W'), (row, col - 1), (row + 1, col)]
             elif row == 4 and col == 1:
                 pos_moves = [(row, col - 1), (row, col + 1), (row - 1, col)]
             elif row == 4 and col == 0:
