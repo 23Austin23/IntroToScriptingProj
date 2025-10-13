@@ -1,0 +1,4 @@
+CSV files, values separated by commas
+First Line in file should be player, qa and tool initial locations
+Every line after should include player/qa previous location and new locations
+Last line should read END
