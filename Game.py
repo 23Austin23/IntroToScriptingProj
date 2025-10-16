@@ -1,5 +1,7 @@
 from Map import *
+from Log import *
 import time
+
 import datetime
 import os
 INTRO = """Welcome to The Flightline! This is a Text Based Game that will test your ability to evade
@@ -162,6 +164,7 @@ def player_moved(map, move, prev_location, move_count):
         return prev_location
 
 def main():
+    file_name = create_log_file()
     move_count = 0
     prev_location = ['', '']
     map = Map()
@@ -179,9 +182,11 @@ def main():
         if move == -1:
             tool_secured(map, move_count, prev_location)
             move_count += 1
-        if move != -1:
+            write_to_log(file_name, map, prev_location)
+        else:
             prev_location = player_moved(map, move, prev_location, move_count)
             move_count += 1
+            write_to_log(file_name, map, prev_location)
             if prev_location == -1:
                 break
 
