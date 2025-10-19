@@ -182,11 +182,11 @@ def main():
         if move == -1:
             tool_secured(map, move_count, prev_location)
             move_count += 1
-            write_to_log(file_name, map, prev_location)
+            #write_to_log(file_name, map, prev_location)
         else:
             prev_location = player_moved(map, move, prev_location, move_count)
             move_count += 1
-            write_to_log(file_name, map, prev_location)
+            #write_to_log(file_name, map, prev_location)
             if prev_location == -1:
                 break
 
